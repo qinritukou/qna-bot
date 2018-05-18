@@ -16,7 +16,7 @@ Before you can use the code, please follow these steps to set everything up.
 This project relies on a FAQ model that you need to train first.
 Follow these steps to train the model:
 
- 1. Create a dataset in the `training` project folder. Please follow the guidelines on the Wiki for this.
+ 1. Create a dataset in the `training` project folder. Please follow the guidelines on [the Wiki](https://github.com/wmeints/qna-bot/wiki/Create-a-dataset) for this.
  2. From within the `training` project, run the command `mvn exec:java` to start the training process.
  3. Within the `models/` folder  there should now be a bin file with the trained model. Copy this file to the `service` project folder.
  

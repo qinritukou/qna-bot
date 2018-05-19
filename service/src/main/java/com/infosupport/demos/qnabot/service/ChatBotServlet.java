@@ -11,7 +11,6 @@ import com.microsoft.bot.connector.implementation.ConnectorClientImpl;
 import com.microsoft.bot.schema.models.Activity;
 import com.microsoft.rest.credentials.ServiceClientCredentials;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +19,10 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ChatBotServlet extends HttpServlet {
+/**
+ * HTTP servlet that handles incoming HTTP messages by directing them to the chatbot implementation.
+ */
+public final class ChatBotServlet extends HttpServlet {
     private static Logger logger = Logger.getLogger(ChatBotServlet.class.getName());
 
     private final ObjectMapper objectMapper;
@@ -28,6 +30,9 @@ public class ChatBotServlet extends HttpServlet {
     private final ServiceClientCredentials clientCredentials;
     private final ChatBot bot;
 
+    /**
+     * Initializes new instance of {@link ChatBotServlet}
+     */
     public ChatBotServlet() {
         this.credentialProvider = new CredentialProviderImpl(getAppId(), getKey());
         this.objectMapper = ObjectMapperFactory.createObjectMapper();
@@ -35,19 +40,30 @@ public class ChatBotServlet extends HttpServlet {
         this.bot = new ChatBotImpl();
     }
 
+    /**
+     * Handles HTTP POST requests
+     *
+     * @param request  Incoming HTTP request
+     * @param response Outgoing HTTP response
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             Activity activity = deserializeActivity(request);
 
+            // Make sure that the request has a proper authorization header
+            // If not, this raises an authentication exception.
             JwtTokenValidation.assertValidActivity(activity, authorizationHeader, credentialProvider);
 
+            // The outgoing messages are not sent as a reply to the incoming HTTP request.
+            // Instead you create a separate channel for them.
             ConnectorClient connectorInstance = new ConnectorClientImpl(activity.serviceUrl(), clientCredentials);
             ConversationContext context = new ConversationContextImpl(connectorInstance, activity);
 
             bot.handle(context);
 
+            // Always send a HTTP 202 notifying the bot framework channel that we've handled the incoming request.
             response.setStatus(202);
             response.setContentLength(0);
         } catch (AuthenticationException ex) {
@@ -59,6 +75,13 @@ public class ChatBotServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Writes a JSON response
+     *
+     * @param response   Response object to write to
+     * @param statusCode Status code for the request
+     * @param value      Value to write
+     */
     private void writeJsonResponse(HttpServletResponse response, int statusCode, Object value) {
         response.setContentType("application/json");
         response.setStatus(statusCode);
@@ -70,10 +93,22 @@ public class ChatBotServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Deserializes the request body to a chatbot activity
+     *
+     * @param request Request object to read from
+     * @return Returns the deserialized request
+     * @throws IOException Gets thrown when the activity could not be deserialized
+     */
     private Activity deserializeActivity(HttpServletRequest request) throws IOException {
         return objectMapper.readValue(request.getReader(), Activity.class);
     }
 
+    /**
+     * Gets the bot app ID
+     *
+     * @return The bot app ID
+     */
     private String getAppId() {
         String appId = System.getenv("BOT_APPID");
 
@@ -84,6 +119,11 @@ public class ChatBotServlet extends HttpServlet {
         return appId;
     }
 
+    /**
+     * Gets the bot password
+     *
+     * @return The bot password
+     */
     private String getKey() {
         String key = System.getenv("BOT_KEY");
 

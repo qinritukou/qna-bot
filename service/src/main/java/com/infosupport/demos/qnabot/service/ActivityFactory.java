@@ -26,13 +26,13 @@ public final class ActivityFactory {
         Activity reply = new Activity();
 
         reply.withFrom(activity.recipient())
-             .withRecipient(activity.from())
-             .withConversation(activity.conversation())
-             .withChannelId(activity.channelId())
-             .withReplyToId(activity.id())
-             .withServiceUrl(activity.serviceUrl())
-             .withTimestamp(new DateTime())
-             .withType(ActivityTypes.MESSAGE);
+                .withRecipient(activity.from())
+                .withConversation(activity.conversation())
+                .withChannelId(activity.channelId())
+                .withReplyToId(activity.id())
+                .withServiceUrl(activity.serviceUrl())
+                .withTimestamp(new DateTime())
+                .withType(ActivityTypes.MESSAGE);
 
         if (text != null && !text.isEmpty()) {
             reply.withText(text);

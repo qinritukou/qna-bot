@@ -34,10 +34,14 @@ public final class ChatBotServlet extends HttpServlet {
      * Initializes new instance of {@link ChatBotServlet}
      */
     public ChatBotServlet() {
+        this(new ChatBotImpl());
+    }
+
+    public ChatBotServlet(ChatBot bot) {
         this.credentialProvider = new CredentialProviderImpl(getAppId(), getKey());
         this.objectMapper = ObjectMapperFactory.createObjectMapper();
         this.clientCredentials = new MicrosoftAppCredentials(getAppId(), getKey());
-        this.bot = new ChatBotImpl();
+        this.bot = bot;
     }
 
     /**

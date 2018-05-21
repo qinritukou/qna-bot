@@ -55,7 +55,7 @@ public final class ConversationContextImpl implements ConversationContext {
     public void sendActivity(Activity activity) {
         try {
             connector.conversations().sendToConversation(activity.conversation().id(), activity);
-        } catch(ErrorResponseException ex) {
+        } catch (ErrorResponseException ex) {
             logger.log(Level.SEVERE, "Failed to deliver activity to channel", ex);
         }
     }

@@ -25,6 +25,7 @@ import org.nd4j.linalg.learning.config.Sgd;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -37,9 +38,34 @@ public class TrainingApplication {
 
         BagOfWordsVectorizer vectorizer = fitVectorizer();
 
-        int inputLayerSize = vectorizer.getVocabCache().vocabWords().size();
+        int inputLayerSize = vectorizer.getVocabCache().numWords();
         int numAnswers = Files.readAllLines(Paths.get("data/answers.csv")).size();
 
+        MultiLayerNetwork network = createNetwork(
+                inputLayerSize,
+                numAnswers, statsStorage);
+
+        fitNetwork(network, vectorizer, numAnswers);
+
+        server.attach(statsStorage);
+
+        File outputFile = new File("model/textclassifier.nb");
+        ModelSerializer.writeModel(network, outputFile, false);
+    }
+
+    static BagOfWordsVectorizer fitVectorizer() {
+        BagOfWordsVectorizer vectorizer = new BagOfWordsVectorizer.Builder()
+                .setIterator(new FileDocumentIterator(new File("data")))
+                .setMinWordFrequency(1)
+                .setTokenizerFactory(new DefaultTokenizerFactory())
+                .build();
+
+        vectorizer.fit();
+
+        return vectorizer;
+    }
+
+    static MultiLayerNetwork createNetwork(int inputLayerSize, int outputLayerSize, StatsStorage statsStorage) {
         MultiLayerConfiguration networkConfiguration = new NeuralNetConfiguration.Builder()
                 .seed(1337)
                 .weightInit(WeightInit.UNIFORM)
@@ -51,7 +77,7 @@ public class TrainingApplication {
                         .lossFunction(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                         .activation(Activation.SOFTMAX)
                         .weightInit(WeightInit.UNIFORM)
-                        .nIn(32).nOut(numAnswers)
+                        .nIn(32).nOut(outputLayerSize)
                         .build())
                 .build();
 
@@ -62,8 +88,10 @@ public class TrainingApplication {
 
         network.init();
 
-        server.attach(statsStorage);
+        return network;
+    }
 
+    static void fitNetwork(MultiLayerNetwork network, BagOfWordsVectorizer vectorizer, int numAnswers) throws Exception {
         try (CSVRecordReader reader = new CSVRecordReader(1, ',')) {
             reader.initialize(new FileSplit(new File("data/questions.csv")));
 
@@ -91,21 +119,6 @@ public class TrainingApplication {
                 reader.reset();
             }
         }
-
-        File outputFile = new File("model/textclassifier.nb");
-        ModelSerializer.writeModel(network, outputFile, false);
-    }
-
-    static BagOfWordsVectorizer fitVectorizer() {
-        BagOfWordsVectorizer vectorizer = new BagOfWordsVectorizer.Builder()
-                .setIterator(new FileDocumentIterator(new File("data")))
-                .setMinWordFrequency(1)
-                .setTokenizerFactory(new DefaultTokenizerFactory())
-                .build();
-
-        vectorizer.fit();
-
-        return vectorizer;
     }
 
     static INDArray oneHotEncode(int value, int numClasses) {

@@ -3,6 +3,7 @@ package com.infosupport.demos.qnabot.training;
 import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.layers.AutoEncoder;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -24,8 +25,8 @@ public class QuestionClassifierFactory {
     /**
      * Creates a new instance of the question classifier based on the provided parameters
      *
-     * @param vectorizer      The question vectorizer to use
-     * @param answers The set of possible answers
+     * @param vectorizer The question vectorizer to use
+     * @param answers    The set of possible answers
      * @return Returns a new instance of {@link QuestionClassifier}
      */
     public static QuestionClassifier create(
@@ -45,25 +46,29 @@ public class QuestionClassifierFactory {
             int inputLayerSize, int outputLayerSize, StatsStorage statsStorage) {
         MultiLayerConfiguration networkConfiguration = new NeuralNetConfiguration.Builder()
                 .seed(1337)
-                .weightInit(WeightInit.UNIFORM)
+                .weightInit(WeightInit.XAVIER)
                 .updater(new Adam(0.001, 0.9, 0.999, 1e-07))
                 .list()
-//                .layer(0, new DenseLayer.Builder()
-//                        .nIn(inputLayerSize).nOut(512)
-//                        .weightInit(WeightInit.UNIFORM)
-//                        .activation(Activation.RELU)
-//                        .build())
-//                .layer(1, new DenseLayer.Builder()
-//                        .nIn(512).nOut(512)
-//                        .weightInit(WeightInit.UNIFORM)
-//                        .activation(Activation.RELU)
-//                        .build())
-                .layer(0, new OutputLayer.Builder()
+                .layer(0, new AutoEncoder.Builder()
+                        .nIn(inputLayerSize).nOut(128)
+                        .corruptionLevel(0.3)
+                        .lossFunction(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
+                        .build()
+                )
+                .layer(1, new AutoEncoder.Builder()
+                        .nIn(128).nOut(64)
+                        .corruptionLevel(0.3)
+                        .lossFunction(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
+                        .build()
+                )
+                .layer(2, new OutputLayer.Builder()
                         .lossFunction(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                         .activation(Activation.SOFTMAX)
-                        .weightInit(WeightInit.UNIFORM)
-                        .nIn(inputLayerSize).nOut(outputLayerSize)
-                        .build())
+                        .nIn(64).nOut(outputLayerSize)
+                        .build()
+                )
+                .pretrain(true)
+                .backprop(true)
                 .build();
 
         MultiLayerNetwork network = new MultiLayerNetwork(networkConfiguration);

@@ -40,6 +40,31 @@ public class QuestionDataSource {
     }
 
     /**
+     * Checks for the availability of more records in the data source
+     *
+     * @return Returns true when there are more records available; Otherwise false
+     * @throws IOException          Gets thrown when the input file could not be reader
+     * @throws InterruptedException Gets thrown when the program is interrupted
+     */
+    public boolean hasNext() throws IOException, InterruptedException {
+        ensureRecordReader();
+
+        return reader.hasNext();
+    }
+
+    /**
+     * Resets the data source to its starting position
+     *
+     * @throws IOException          Gets thrown when the input file could not be reader
+     * @throws InterruptedException Gets thrown when the program is interrupted
+     */
+    public void reset() throws IOException, InterruptedException {
+        ensureRecordReader();
+
+        reader.reset();
+    }
+
+    /**
      * Gets the next batch from the data source
      *
      * @return The next batch of data
@@ -48,12 +73,6 @@ public class QuestionDataSource {
      */
     public Batch next() throws IOException, InterruptedException {
         ensureRecordReader();
-
-        // The data source is a rather strange beast, it goes on forever.
-        // So every time we reach the end of the file, start back at the beginning.
-        if (!reader.hasNext()) {
-            reader.reset();
-        }
 
         List<List<Writable>> records = reader.next(batchSize);
 

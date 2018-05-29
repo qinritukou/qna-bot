@@ -42,9 +42,12 @@ public final class QuestionClassifier {
                 inputFile, vectorizer, 32, answers.size());
 
         for(int epoch = 0; epoch < 50; epoch++) {
-            Batch nextBatch = dataSource.next();
+            while(dataSource.hasNext()) {
+                Batch nextBatch = dataSource.next();
+                network.fit(nextBatch.getFeatures(), nextBatch.getLabels());
+            }
 
-            network.fit(nextBatch.getFeatures(), nextBatch.getLabels());
+            dataSource.reset();
         }
     }
 

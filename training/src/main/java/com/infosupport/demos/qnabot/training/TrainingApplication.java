@@ -17,7 +17,12 @@ public class TrainingApplication {
         QuestionClassifier classifier = QuestionClassifierFactory.create(vectorizer, answers);
 
         server.attach(classifier.getStatsStorage());
+
         classifier.fit(new File("data/questions_train.csv"));
+
+        double score = classifier.score(new File("data/questions_train.csv"));
+
+        System.out.println(String.format("Accuracy: %f",score));
 
         classifier.save(new File("model/classifier.bin"));
     }

@@ -1,7 +1,10 @@
 package com.infosupport.demos.qnabot.training;
 
 import org.deeplearning4j.api.storage.StatsStorage;
+import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,17 +41,55 @@ public final class QuestionClassifier {
      * @param inputFile Input file to use
      */
     public void fit(File inputFile) throws IOException, InterruptedException {
-        QuestionDataSource dataSource=  new QuestionDataSource(
+        QuestionDataSource dataSource = new QuestionDataSource(
                 inputFile, vectorizer, 32, answers.size());
 
-        for(int epoch = 0; epoch < 50; epoch++) {
-            while(dataSource.hasNext()) {
+        for (int epoch = 0; epoch < 50; epoch++) {
+            while (dataSource.hasNext()) {
                 Batch nextBatch = dataSource.next();
                 network.fit(nextBatch.getFeatures(), nextBatch.getLabels());
             }
 
             dataSource.reset();
         }
+    }
+
+    /**
+     * Scores the classifier
+     *
+     * @param inputFile
+     * @return Returns the overall accuracy for the classifier
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public double score(File inputFile) throws IOException, InterruptedException {
+        QuestionDataSource dataSource = new QuestionDataSource(inputFile, vectorizer, 32, answers.size());
+
+        INDArray predictions = null;
+        INDArray actuals = null;
+
+        while (dataSource.hasNext()) {
+            Batch batch = dataSource.next();
+
+            INDArray predictedOutput = network.output(batch.getFeatures());
+
+            if (predictions != null) {
+                predictions = Nd4j.concat(0, predictions, predictedOutput);
+            } else {
+                predictions = predictedOutput;
+            }
+
+            if (actuals != null) {
+                actuals = Nd4j.concat(0, actuals, batch.getLabels());
+            } else {
+                actuals = batch.getLabels();
+            }
+        }
+
+        Evaluation evaluation = new Evaluation(answers.size());
+        evaluation.eval(actuals,predictions);
+
+        return evaluation.accuracy();
     }
 
     /**

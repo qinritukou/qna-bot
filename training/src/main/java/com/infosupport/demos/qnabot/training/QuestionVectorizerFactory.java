@@ -14,7 +14,7 @@ public class QuestionVectorizerFactory {
      *
      * @return A new instance of {@link QuestionVectorizer}
      */
-    public static QuestionVectorizer create(File inputDirectory) {
+    public static QuestionVectorizer create(File inputFile) throws Exception {
         // The tokenizer factory will use the preprocessor to make everything lower-case
         // and remove any punctuation in the text.
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
@@ -24,8 +24,7 @@ public class QuestionVectorizerFactory {
         // a unique fingerprint for every question we feed it.
         BagOfWordsVectorizer vectorizer = new BagOfWordsVectorizer.Builder()
                 .setTokenizerFactory(tokenizerFactory)
-                .setMinWordFrequency(1)
-                .setIterator(new FileSentenceIterator(inputDirectory))
+                .setIterator(new CSVSentenceIterator(inputFile))
                 .build();
 
         return new QuestionVectorizer(vectorizer);

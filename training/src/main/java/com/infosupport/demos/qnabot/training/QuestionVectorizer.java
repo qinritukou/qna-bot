@@ -2,8 +2,11 @@ package com.infosupport.demos.qnabot.training;
 
 import org.deeplearning4j.bagofwords.vectorizer.BagOfWordsVectorizer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Converts questions to a correct representation for the question classifier
@@ -26,8 +29,8 @@ public class QuestionVectorizer {
      * @param questions Questions to transform
      * @return Returns a 2D-matrix with the correct representation for the neural network
      */
-    public INDArray transform(String... questions) {
-        return vectorizer.transform(Arrays.asList(questions));
+    public INDArray transform(String question) {
+        return vectorizer.transform(question);
     }
 
     /**

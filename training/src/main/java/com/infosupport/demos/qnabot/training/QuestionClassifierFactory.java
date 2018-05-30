@@ -13,6 +13,7 @@ import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.Map;
@@ -46,28 +47,20 @@ public class QuestionClassifierFactory {
             int inputLayerSize, int outputLayerSize, StatsStorage statsStorage) {
         MultiLayerConfiguration networkConfiguration = new NeuralNetConfiguration.Builder()
                 .seed(1337)
-                .weightInit(WeightInit.XAVIER)
-                .updater(new Adam(0.001, 0.9, 0.999, 1e-07))
+                .updater(new RmsProp(0.001))
                 .list()
-                .layer(0, new AutoEncoder.Builder()
-                        .nIn(inputLayerSize).nOut(128)
-                        .corruptionLevel(0.3)
-                        .lossFunction(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
+                .layer(0, new DenseLayer.Builder()
+                        .activation(Activation.RELU)
+                        .nIn(inputLayerSize).nOut(1024)
                         .build()
                 )
-                .layer(1, new AutoEncoder.Builder()
-                        .nIn(128).nOut(64)
-                        .corruptionLevel(0.3)
-                        .lossFunction(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
-                        .build()
-                )
-                .layer(2, new OutputLayer.Builder()
-                        .lossFunction(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                .layer(1, new OutputLayer.Builder()
+                        .lossFunction(LossFunctions.LossFunction.MCXENT)
                         .activation(Activation.SOFTMAX)
-                        .nIn(64).nOut(outputLayerSize)
+                        .nIn(1024).nOut(outputLayerSize)
                         .build()
                 )
-                .pretrain(true)
+                .pretrain(false)
                 .backprop(true)
                 .build();
 

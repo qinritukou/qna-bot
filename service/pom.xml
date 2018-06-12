@@ -13,6 +13,7 @@
 
     <properties>
         <deeplearning4j.version>1.0.0-alpha</deeplearning4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -37,7 +38,11 @@
             <artifactId>jackson-datatype-joda</artifactId>
             <version>2.9.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-scala_2.11</artifactId>
+            <version>2.9.5</version>
+        </dependency>
 
 
         <dependency>

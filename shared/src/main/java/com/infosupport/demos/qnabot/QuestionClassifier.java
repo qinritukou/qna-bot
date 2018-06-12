@@ -95,7 +95,10 @@ public final class QuestionClassifier {
      * @return The highest ranking answer
      */
     public String predict(String text) {
-        return null;
+        INDArray prediction = network.output(vectorizer.transform(text));
+        int answerIndex = prediction.argMax(1).getInt(0,0);
+
+        return answers.get(answerIndex);
     }
 
     /**

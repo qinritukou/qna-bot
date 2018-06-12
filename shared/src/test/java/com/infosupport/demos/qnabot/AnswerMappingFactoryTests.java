@@ -13,5 +13,9 @@ public class AnswerMappingFactoryTests {
         Map<Integer,String> mapping = AnswersMappingFactory.create(new File("../data/answers.csv"));
 
         assertThat(mapping.size()).isEqualTo(5);
+
+        for(Integer key : mapping.keySet()) {
+            assertThat(mapping.get(key)).isNotEmpty();
+        }
     }
 }

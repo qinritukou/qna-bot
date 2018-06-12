@@ -13,6 +13,7 @@
 
     <properties>
         <deeplearning4j.version>1.0.0-alpha</deeplearning4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>

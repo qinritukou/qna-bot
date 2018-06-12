@@ -1,12 +1,7 @@
-package com.infosupport.demos.qnabot.training;
+package com.infosupport.demos.qnabot;
 
 import org.deeplearning4j.bagofwords.vectorizer.BagOfWordsVectorizer;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Converts questions to a correct representation for the question classifier

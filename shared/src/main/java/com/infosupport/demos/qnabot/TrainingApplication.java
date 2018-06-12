@@ -1,4 +1,4 @@
-package com.infosupport.demos.qnabot.training;
+package com.infosupport.demos.qnabot;
 
 import org.deeplearning4j.ui.api.UIServer;
 

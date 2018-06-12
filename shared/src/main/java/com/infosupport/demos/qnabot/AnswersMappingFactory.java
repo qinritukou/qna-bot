@@ -1,4 +1,4 @@
-package com.infosupport.demos.qnabot.training;
+package com.infosupport.demos.qnabot;
 
 import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
 import org.datavec.api.split.FileSplit;

@@ -1,4 +1,4 @@
-package com.infosupport.demos.qnabot.training;
+package com.infosupport.demos.qnabot;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;

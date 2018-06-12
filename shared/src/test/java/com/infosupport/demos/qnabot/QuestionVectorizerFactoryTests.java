@@ -1,4 +1,4 @@
-package com.infosupport.demos.qnabot.training;
+package com.infosupport.demos.qnabot;
 
 import org.junit.jupiter.api.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;

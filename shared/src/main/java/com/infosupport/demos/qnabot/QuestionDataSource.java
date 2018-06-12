@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class QuestionDataSource {
     private final File sourceFile;
-    private final QuestionVectorizer vectorizer;
+    private final TextVectorizer vectorizer;
     private final int batchSize;
     private final int possibleAnswers;
 
@@ -32,7 +32,7 @@ public class QuestionDataSource {
      * @param batchSize       Number of records to read in each batch
      * @param possibleAnswers The number of possible answers that can be given
      */
-    public QuestionDataSource(File sourceFile, QuestionVectorizer vectorizer, int batchSize, int possibleAnswers) {
+    public QuestionDataSource(File sourceFile, TextVectorizer vectorizer, int batchSize, int possibleAnswers) {
         this.sourceFile = sourceFile;
         this.vectorizer = vectorizer;
         this.batchSize = batchSize;

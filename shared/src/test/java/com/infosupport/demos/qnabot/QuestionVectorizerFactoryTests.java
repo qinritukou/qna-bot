@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.*;
 public class QuestionVectorizerFactoryTests {
     @Test
     public void createReturnsValidVectorizer() throws Exception {
-        QuestionVectorizer questionVectorizer = QuestionVectorizerFactory.create(new File("../data/questions_train.csv"));
+        TextVectorizer questionVectorizer = QuestionVectorizerFactory.create(new File("../data/questions_train.csv"));
         questionVectorizer.fit();
 
         INDArray output = questionVectorizer.transform("How can I register?");

@@ -1,8 +1,8 @@
 package com.infosupport.demos.qnabot;
 
-import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -15,23 +15,19 @@ import java.util.Map;
  */
 public final class QuestionClassifier {
     private final MultiLayerNetwork network;
-    private final QuestionVectorizer vectorizer;
-    private final StatsStorage statsStorage;
+    private final TextVectorizer vectorizer;
     private final Map<Integer, String> answers;
 
     /**
      * Initializes a new instance of {@link QuestionClassifier}
      *
-     * @param network      Neural network to use for classification
-     * @param statsStorage Storage to use for statistics during training
+     * @param network Neural network to use for classification
      */
     public QuestionClassifier(MultiLayerNetwork network,
-                              QuestionVectorizer vectorizer,
-                              StatsStorage statsStorage,
+                              TextVectorizer vectorizer,
                               Map<Integer, String> answers) {
         this.network = network;
         this.vectorizer = vectorizer;
-        this.statsStorage = statsStorage;
         this.answers = answers;
     }
 
@@ -44,7 +40,7 @@ public final class QuestionClassifier {
         QuestionDataSource dataSource = new QuestionDataSource(
                 inputFile, vectorizer, 32, answers.size());
 
-        for (int epoch = 0; epoch < 50; epoch++) {
+        for (int epoch = 0; epoch < 500; epoch++) {
             while (dataSource.hasNext()) {
                 Batch nextBatch = dataSource.next();
                 network.fit(nextBatch.getFeatures(), nextBatch.getLabels());
@@ -57,10 +53,10 @@ public final class QuestionClassifier {
     /**
      * Scores the classifier
      *
-     * @param inputFile
+     * @param inputFile The input file to use for loading the validation set
      * @return Returns the overall accuracy for the classifier
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException          Gets thrown when the input file could not be read
+     * @throws InterruptedException Gets thrown when validation is interrupted
      */
     public double score(File inputFile) throws IOException, InterruptedException {
         QuestionDataSource dataSource = new QuestionDataSource(inputFile, vectorizer, 32, answers.size());
@@ -87,7 +83,7 @@ public final class QuestionClassifier {
         }
 
         Evaluation evaluation = new Evaluation(answers.size());
-        evaluation.eval(actuals,predictions);
+        evaluation.eval(actuals, predictions);
 
         return evaluation.accuracy();
     }
@@ -107,16 +103,7 @@ public final class QuestionClassifier {
      *
      * @param outputFile Output file to store the model to
      */
-    public void save(File outputFile) {
-
-    }
-
-    /**
-     * Gets the storage for the model statistics
-     *
-     * @return The instance of the model statistics storage
-     */
-    public StatsStorage getStatsStorage() {
-        return statsStorage;
+    public void save(File outputFile) throws IOException {
+        ModelSerializer.writeModel(this.network, outputFile, false);
     }
 }

@@ -17,7 +17,7 @@ public class QuestionClassifierFactoryTests {
         answerMapping.put(1, "Test answer 2");
         answerMapping.put(2, "Test answer 3");
 
-        QuestionVectorizer vectorizer = mock(QuestionVectorizer.class);
+        TextVectorizer vectorizer = mock(TextVectorizer.class);
 
         when(vectorizer.vocabularySize()).thenReturn(10);
 

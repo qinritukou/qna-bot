@@ -1,0 +1,15 @@
+{
+    "name": "GOTO Bot",
+    "description": "",
+    "secretKey": "",
+    "services": [
+        {
+            "appId": "",
+            "id": "47f6e030-73d5-11e8-b460-61e8d99981c1",
+            "type": "endpoint",
+            "appPassword": "",
+            "endpoint": "http://localhost:8080/qnabot/api/messages",
+            "name": "http://localhost:8080/qnabot/api/messages"
+        }
+    ]
+}

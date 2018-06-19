@@ -2,6 +2,8 @@
 This repository contains sample code for my session "Build a FAQ bot with 
 deeplearning4J" Feel free to clone this repository and modify the code.
 
+![Bot demo](docs/bot.gif)
+
 ## Quickstart
 Before you can use the code, please follow these steps to set everything up.
 
@@ -16,11 +18,12 @@ Before you can use the code, please follow these steps to set everything up.
 This project relies on a FAQ model that you need to train first.
 Follow these steps to train the model:
 
- 1. Create a dataset in the `training` project folder. Please follow the guidelines on [the Wiki](https://github.com/wmeints/qna-bot/wiki/Create-a-dataset) for this.
- 2. From within the `training` project, run the command `mvn exec:java` to start the training process.
- 3. Within the `models/` folder  there should now be a bin file with the trained model. Copy this file to the `service` project folder.
+ 1. Edit the questions and answers file in `./data` you can refer to answers by the unique index for the answer.
+ 2. Package the training application by running `mvn package`
+ 3. Execute the training application with `java -jar training/target/training-1.0-SNAPSHOT.jar`
  
 **Please be aware** The process of training a model may take a lot of time, depending on your machine. 
+Also note that you need CUDA 9 and a CUDA capable graphics card.
 
 ## Deploy the code
 This code runs on top of tomcat 9. You need to install Tomcat on your computer
@@ -34,3 +37,5 @@ Follow these steps to deploy the application:
  
 The app should now be available under `http://localhost:8080/qnabot`
  
+Configure the Microsoft Bot Emulator to point to `http://localhost:8080/qnabot/api/messages` for the bot endpoint.
+You can leave the appId and password setting empty.

@@ -78,7 +78,7 @@ public class QuestionDataSource {
 
         // Questions are encoded using the question vectorizer.
         List<INDArray> featureData = records.stream()
-                .map(record -> vectorizer.transform(records.get(1).toString()))
+                .map(record -> vectorizer.transform(record.get(1).toString()))
                 .collect(Collectors.toList());
 
         // Answers are encoded as one-hot vectors.

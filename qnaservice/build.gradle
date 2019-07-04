@@ -1,0 +1,91 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.6.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+// gradle cleanEclipse eclipse
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+group = 'com.infosupport.demos.qnaservice'
+version = ''
+sourceCompatibility = 1.8
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/java'
+		}
+		resources{
+			srcDir 'src/main/resources'
+		}
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile group: 'org.deeplearning4j', name: 'deeplearning4j-parallel-wrapper', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'deeplearning4j-ui_2.11', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'deeplearning4j-nlp', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'arbiter-deeplearning4j', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'arbiter-ui_2.11', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'deeplearning4j-zoo', version: '1.0.0-beta3'
+
+//	compile group: 'org.deeplearning4j', name: 'deeplearning4j-cuda-9.2', version: '1.0.0-beta3'
+//	compile group: 'org.nd4j', name: 'nd4j-cuda-9.2-platform', version: '1.0.0-beta3'
+	compile group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: '1.0.0-beta3'
+	compile group: 'org.nd4j', name: 'nd4j-native-platform', version: '1.0.0-beta3'
+	
+	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+	compile group: 'org.datavec', name: 'datavec-data-image', version: '1.0.0-beta3'
+	compile group: 'org.datavec', name: 'datavec-hadoop', version: '1.0.0-beta3'
+	compile group: 'org.bytedeco', name: 'javacv-platform', version: '1.4.3'
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
+	compile("com.h2database:h2")
+	
+	testCompile group: 'org.datavec', name: 'datavec-data-codec', version: '1.0.0-beta3'
+	testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
+	
+	implementation('org.springframework.boot:spring-boot-starter-aop')
+	implementation('org.springframework.boot:spring-boot-starter-jdbc')
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('org.springframework.boot:spring-boot-starter-validation')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	implementation('org.springframework.boot:spring-boot-starter-websocket')
+	implementation('org.springframework.boot:spring-boot-starter-mail')
+	implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+	// make static resources refresh
+	implementation('org.springframework.boot:spring-boot-devtools')
+
+	
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('org.springframework.security:spring-security-test')
+
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+	baseName 'qnaservice'
+	manifest {
+		attributes 'Main-Class': 'com.infosupport.demos.qnaservice.app.QnaserviceApplication'
+	}
+}
